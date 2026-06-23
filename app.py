@@ -67,10 +67,6 @@ ref_selection = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 
-st.sidebar.markdown(
-    "Experimental Conditions", 
-    help="Nồng độ các thành phần hóa lý ảnh hưởng trực tiếp đến động học tách mạch DNA.",
-    text_alignment="left"
 )
 
 dnac1_nm = st.sidebar.number_input("DNA 1 (nM):", 1, 2000, 10, 1)
@@ -80,10 +76,6 @@ mg_mM = st.sidebar.number_input("Mg2+ (mM):", 0.0, 10.0, 3.0, 0.5)
 
 st.sidebar.markdown("---")
 
-st.sidebar.markdown(
-    "Slope Factors (k)", 
-    help="Hệ số độ dốc điều khiển độ thoải của đường cong Sigmoid.",
-    text_alignment="left"
 )
 
 # Tính toán giá trị k nền an toàn
@@ -92,11 +84,11 @@ k_homo_default, k_hetero_default = get_theoretical_k(allele1, allele2, na_mM)
 # Thêm khóa 'key' cố định cho các Slider để bảo vệ trạng thái của chúng
 k_homo = st.sidebar.slider(
     "k for Homoduplex:", 0.1, 1.0, k_homo_default, 0.01, key="slider_k_homo",
-    help="Mặc định tự động tính theo %GC và Muối."
+   
 )
 k_hetero = st.sidebar.slider(
     "k for Heterozygote:", 0.1, 2.0, k_hetero_default, 0.01, key="slider_k_hetero",
-    help="Mặc định tự động cộng thêm mức phạt lỏng lẻo cấu trúc."
+
 )
 
 st.sidebar.markdown(" ")
