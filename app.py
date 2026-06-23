@@ -86,7 +86,7 @@ k_homo = st.sidebar.slider(
    
 )
 k_hetero = st.sidebar.slider(
-    "k for Heterozygote:", 0.1, 2.0, k_hetero_default, 0.01, key="slider_k_hetero",
+    "k for Heteroduplex:", 0.1, 2.0, k_hetero_default, 0.01, key="slider_k_hetero",
 
 )
 
@@ -157,7 +157,7 @@ if allele1 and allele2:
         # 3. Metrics Display
         st.subheader("Predicted Results")
         st.info(f"**Detected Mismatch Details:** {mismatch_info}")
-        st.success(f"Current Applied Slopes:** `k_homo` = **{k_homo:.3f}** | `k_hetero` = **{k_hetero:.3f}**")
+        st.success(f"Current Applied Slopes:** `k_homoduplex` = **{k_homo:.3f}** | `k_heteroduplex` = **{k_hetero:.3f}**")
         
         c1, c2, c3, c4, c5 = st.columns(5)
         with c1:
