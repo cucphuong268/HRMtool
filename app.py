@@ -208,7 +208,7 @@ if allele1 and allele2:
         cc1, cc2, cc3 = st.columns(3)
         with cc1: color_homo1 = st.color_picker("Homozygote 1 Color", value="#1E90FF")
         with cc2: color_homo2 = st.color_picker("Homozygote 2 Color", value="#FF4500")
-        with cc3: color_het = st.color_picker("Heterozygote Color", value="#8A2BE2")
+        with cc3: color_het = st.color_picker("Heterozygote Color", value="#14452F")
             
         fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
         zoom_range = (min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6)
