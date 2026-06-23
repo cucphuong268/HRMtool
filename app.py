@@ -67,7 +67,6 @@ ref_selection = st.sidebar.selectbox(
 
 st.sidebar.markdown("---")
 
-)
 
 dnac1_nm = st.sidebar.number_input("DNA 1 (nM):", 1, 2000, 10, 1)
 dnac2_nm = st.sidebar.number_input("DNA 2 (nM):", 1, 2000, 10, 1)
