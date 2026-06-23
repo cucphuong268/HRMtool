@@ -3,17 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Bio.SeqUtils import MeltingTemp as mt
 
-# ==========================================
-# 1. PAGE CONFIGURATION & INITIALIZATION
-# ==========================================
+
 st.set_page_config(page_title="HRMTool", layout="wide")
 
 st.title("HRM Curve Analyzer & Tm Predictor")
 st.markdown("---")
 
-# ==========================================
-# 2. SIDEBAR - PARAMETERS & CUSTOMIZATION
-# ==========================================
+
 st.sidebar.header("Difference Plot Reference")
 ref_selection = st.sidebar.selectbox(
     "Select Reference Baseline:",
@@ -31,35 +27,23 @@ st.sidebar.markdown("Slope Factors (k)")
 k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01)
 k_hetero = st.sidebar.slider("k for Heterozygote:", 0.1, 1.5, 0.80, 0.01)
 
-# ==========================================
-# 3. SEQUENCE INPUT 
-# ==========================================
 col1, col2 = st.columns(2)
 with col1:
     raw_allele1 = st.text_input("Allele 1 Sequence (5' -> 3'):", 
-                  value="AGCCAAAACAGCCTTAAATAGCATTCAAACACTCTTTCTTCCATGCCTTCAGTCCTGC")
+                  value="CGGCTTGGCTGCAGTGCTCACTGCTGGGCTGAGTCACAACCCCTCCAGAGG")
     allele1 = raw_allele1.upper().replace(" ", "") 
 with col2:
     raw_allele2 = st.text_input("Allele 2 Sequence (5' -> 3'):", 
-                  value="AGCCAAAACAGCCTTAAATAGCATTCCAACACTCTTTCTTCCATGCCTTCAGTCCTGC")
+                  value="CGGCTTGGCTGCAGTGCTCGCTGCTGGGCTGAGTCACAACCCCTCCAGAGG")
     allele2 = raw_allele2.upper().replace(" ", "") 
 
-# ==========================================
-# 4. COMPUTATION BACKEND (BIOPYTHON 1.76 ALIGNMENT)
-# ==========================================
 def get_complement_3to5(seq):
-    """
-    Tạo chuỗi bổ sung theo chiều 3' -> 5' bằng cách chuyển đổi nucleotide 
-    nhưng KHÔNG đảo ngược thứ tự chuỗi, tuân thủ đúng quy ước c_seq của Biopython.
-    """
+
     complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
     return "".join(complement.get(base, base) for base in seq)
 
 def extract_visual_mismatch(seq1, seq2):
-    """
-    Hàm bổ trợ bóc tách thông tin hiển thị (Không can thiệp vào logic tính toán chính).
-    Tìm vị trí SNP, xác định loại mismatch và trả về chuỗi hiển thị bộ ba.
-    """
+
     snp_pos = None
     for i, (a, b) in enumerate(zip(seq1, seq2)):
         if a != b:
@@ -73,7 +57,7 @@ def extract_visual_mismatch(seq1, seq2):
     nu2 = seq2[snp_pos]
     pair = {nu1, nu2}
     
-    # Xác định loại đột biến theo hằng số thực nghiệm chính xác để ghi chú thông tin
+
     if pair in [{"A", "G"}, {"C", "T"}]:
         mismatch_type = f"Transition ({nu1} ↔ {nu2})"
     else:
@@ -88,11 +72,11 @@ def extract_visual_mismatch(seq1, seq2):
     comp_trip1 = get_complement_3to5(raw_trip1)
     comp_trip2 = get_complement_3to5(raw_trip2)
     
-    # Chuỗi hiển thị mạch gốc làm nổi bật SNP trong dấu vuông
+   
     h_raw1 = f"{seq1[snp_pos-1] if snp_pos > 0 else ''}[{nu1}]{seq1[snp_pos+1] if snp_pos < len(seq1)-1 else ''}"
     h_raw2 = f"{seq2[snp_pos-1] if snp_pos > 0 else ''}[{nu2}]{seq2[snp_pos+1] if snp_pos < len(seq2)-1 else ''}"
     
-    # Chuỗi hiển thị mạch bổ sung tương ứng
+   
     h_comp1 = f"{comp_trip1[0] if snp_pos > 0 else ''}[{comp_trip1[1] if snp_pos > 0 else comp_trip1[0]}]{comp_trip1[2] if len(comp_trip1)>2 else ''}"
     h_comp2 = f"{comp_trip2[0] if snp_pos > 0 else ''}[{comp_trip2[1] if snp_pos > 0 else comp_trip2[0]}]{comp_trip2[2] if len(comp_trip2)>2 else ''}"
     
@@ -103,21 +87,21 @@ if allele1 and allele2:
     if len(allele1) != len(allele2):
         st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
     else:
-        # 1. Tính Tm cho dòng Đồng hợp tử (GIỮ NGUYÊN GỐC)
+     
         Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
         Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
         
-        # Tính delta Tm giữa 2 dòng đồng hợp tử
+     
         delta_tm = abs(Tm1 - Tm2)
         
-        # 2. Tạo sợi bổ sung chiều 3' -> 5' để tính Heteroduplex bắt cặp sai (GIỮ NGUYÊN GỐC)
+       
         comp_allele1_3to5 = get_complement_3to5(allele1)
         comp_allele2_3to5 = get_complement_3to5(allele2)
         
         try:
-            # Sợi xuôi Allele 1 (5'->3') lai với sợi bổ sung của Allele 2 (3'->5')
+            
             Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
-            # Sợi xuôi Allele 2 (5'->3') lai với sợi bổ sung của Allele 1 (3'->5')
+       
             Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
             
             penalty_1 = Tm1 - Tm_het1
@@ -136,13 +120,13 @@ if allele1 and allele2:
             Tm_het1 = Tm1 - penalty_1
             Tm_het2 = Tm2 - penalty_2     
             
-        # Trích xuất dữ liệu bối cảnh độc lập chỉ phục vụ render giao diện
+
         mismatch_info, r1, c_back1, r2, c_back2 = extract_visual_mismatch(allele1, allele2)
 
-        # 3. Hiển thị bảng kết quả (Metrics display)
+     
         st.subheader("Predicted Results (Bio.SeqUtils.MeltingTemp Model)")
         
-        # Thêm thông báo chi tiết loại mismatch ngay trên bảng số liệu
+      
         st.info(f"Detected Mismatch Details:** {mismatch_info}")
         
         c1, c2, c3, c4, c5 = st.columns(5)
@@ -170,9 +154,7 @@ if allele1 and allele2:
             st.markdown("**Mismatch Structure:**")
             st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
-        # ==========================================
-        # 5. MODELING & DIFFERENCE PLOT CALCULATION
-        # ==========================================
+
         T = np.linspace(65, 95, 1000)
         def inverse_sigmoid(T, Tm, k):
             return 1 / (1 + np.exp((T - Tm) / k))
@@ -203,12 +185,9 @@ if allele1 and allele2:
         diff_homo2 = F_homo2 - F_ref
         diff_het   = F_het - F_ref
 
-        # ==========================================
-        # 6. VISUALIZATION (3 PLOTS) (GIỮ NGUYÊN GỐC)
-        # ==========================================
         st.subheader("HRM Analysis Visualizations")
         
-        # --- KHỐI ĐỔI MÀU ĐƯỢC ĐẶT TRƯỚC KHI VẼ ĐỂ ĐẢM BẢO LUÔN CÓ BIẾN MÀU HỢP LỆ ---
+
         st.markdown("Custom Plot Colors")
         cc1, cc2, cc3 = st.columns(3)
         with cc1:
@@ -218,7 +197,7 @@ if allele1 and allele2:
         with cc3:
             color_het = st.color_picker("Heterozygote Color", value="#8A2BE2")
             
-        st.markdown(" ") # Tạo khoảng cách nhỏ
+        st.markdown(" ")
         
         fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
         zoom_range = (min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6)
