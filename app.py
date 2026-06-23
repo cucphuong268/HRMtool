@@ -37,11 +37,11 @@ k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 1.5, 0.80, 0.01)
 col1, col2 = st.columns(2)
 with col1:
     raw_allele1 = st.text_input("Allele 1 Sequence (5' -> 3'):", 
-                  value="AGCCAAAACAGCCTTAAATAGCATTCAAACACTCTTTCTTCCATGCCTTCAGTCCTGC")
+                  value="CGGCTTGGCTGCAGTGCTCACTGCTGGGCTGAGTCACAACCCCTCCAGAGG")
     allele1 = raw_allele1.upper().replace(" ", "") 
 with col2:
     raw_allele2 = st.text_input("Allele 2 Sequence (5' -> 3'):", 
-                  value="AGCCAAAACAGCCTTAAATAGCATTCCAACACTCTTTCTTCCATGCCTTCAGTCCTGC")
+                  value="CGGCTTGGCTGCAGTGCTCGCTGCTGGGCTGAGTCACAACCCCTCCAGAGG")
     allele2 = raw_allele2.upper().replace(" ", "") 
 
 # ==========================================
