@@ -75,7 +75,7 @@ mg_mM = st.sidebar.number_input("Mg2+ (mM):", 0.0, 10.0, 3.0, 0.5)
 
 st.sidebar.markdown("---")
 
-)
+
 
 # Tính toán giá trị k nền an toàn
 k_homo_default, k_hetero_default = get_theoretical_k(allele1, allele2, na_mM)
