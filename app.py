@@ -54,6 +54,15 @@ with col2:
 # ==========================================
 # 4. COMPUTATION BACKEND
 # ==========================================
+def estimate_hetero_penalty(seq1, seq2):
+    snp_pos = None
+    for i, (a, b) in enumerate(zip(seq1, seq2)):
+        if a != b:
+            snp_pos = i
+            break
+    if snp_pos is None: return 0.0
+    pair = {seq1[snp_pos], seq2[snp_pos]}
+    return 1.0 if pair in [{"A", "G"}, {"C", "T"}] else 2.0
 
 if allele1 and allele2:
     if len(allele1) != len(allele2):
@@ -63,16 +72,7 @@ if allele1 and allele2:
         # Calculate Tms using Biopython
         Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
         Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
-        snp_pos = None
-            for i, (a, b) in enumerate(zip(allele1, allele2)):
-                if a != b:
-                    snp_pos = i
-                    break
-            
-            penalty = 0.0
-            if snp_pos is not None:
-                pair = {allele1[snp_pos], allele2[snp_pos]}
-                penalty = 1.0 if pair in [{"A", "G"}, {"C", "T"}] else 2.0
+        
         penalty = estimate_hetero_penalty(allele1, allele2)
         Tm_het1, Tm_het2 = Tm1 - penalty, Tm2 - penalty
 
