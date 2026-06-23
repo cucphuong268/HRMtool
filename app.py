@@ -82,7 +82,7 @@ k_homo_default, k_hetero_default = get_theoretical_k(allele1, allele2, na_mM)
 
 # Thêm khóa 'key' cố định cho các Slider để bảo vệ trạng thái của chúng
 k_homo = st.sidebar.slider(
-    "k for Homoduplex:", 0.1, 1.0, k_homo_default, 0.01, key="slider_k_homo",
+    "k for Homoduplex:", 0.1, 2.0, k_homo_default, 0.01, key="slider_k_homo",
    
 )
 k_hetero = st.sidebar.slider(
