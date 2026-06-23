@@ -164,7 +164,7 @@ if allele1 and allele2:
         mismatch_info, r1, c_back1, r2, c_back2 = extract_visual_mismatch(allele1, allele2)
 
         # 3. Metrics Display
-        st.subheader("Predicted Results & Active Slopes")
+        st.subheader("Predicted Results")
         st.info(f"**Detected Mismatch Details:** {mismatch_info}")
         st.success(f"Current Applied Slopes:** `k_homo` = **{k_homo:.3f}** | `k_hetero` = **{k_hetero:.3f}**")
         
