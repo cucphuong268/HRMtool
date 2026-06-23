@@ -29,7 +29,7 @@ mg_mM = st.sidebar.number_input("Mg2+ (mM):", 0.0, 10.0, 3.0, 0.5)
 
 st.sidebar.markdown("Slope Factors (k)")
 k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01)
-k_hetero = st.sidebar.slider("k for Heterozygote:", 0.1, 1.5, 0.80, 0.01)
+k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 1.5, 0.80, 0.01)
 
 # ==========================================
 # 3. SEQUENCE INPUT 
