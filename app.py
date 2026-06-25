@@ -10,23 +10,8 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-def _get_corrected_delta(Tm1, Tm2, length):
-    # Tính delta Tm thô
-    raw_delta = abs(Tm1 - Tm2)
-    
-    # Hằng số hiệu chỉnh dựa trên entropy (tùy chỉnh k_factor để cân chỉnh)
-    k_length_factor = 30.0 
-    
-    # Công thức hiệu chỉnh khoa học
-    corrected_delta = raw_delta * (1 - (k_length_factor / (length + k_length_factor)))
-    
-    return corrected_delta
-
 # Sau đó mới đến hàm chính của bạn:
-def run_hrm_analysis():
-    # ... logic của bạn ...
-    delta_tm = _get_corrected_delta(Tm1, Tm2, length) # Bây giờ Python đã biết hàm này là gì
-    # ... tiếp tục các dòng lệnh khác ...
+
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -43,7 +28,11 @@ def run_hrm_analysis():
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
     k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
-
+    Tm1 = _get_precise_tm(allele1)
+    Tm2 = _get_precise_tm(allele2)
+    
+    # Delta giữ nguyên như logic cũ của bạn
+    delta_tm = abs(Tm1 - Tm2)
     col1, col2 = st.columns(2)
     with col1:
         raw_allele1 = st.text_input("Allele 1 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCAAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq1_input")
@@ -81,7 +70,7 @@ def run_hrm_analysis():
             Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
             Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
             length = len(allele1.replace(" ", "")) # Đảm bảo độ dài chính xác
-            delta_tm = _get_corrected_delta(Tm1, Tm2, length)
+            delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
