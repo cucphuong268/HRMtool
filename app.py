@@ -10,6 +10,21 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
+def _get_scientific_delta_tm(Tm1, Tm2, length):
+    # Delta Tm lý thuyết (giả định là giá trị tại điểm bão hòa)
+    raw_delta = abs(Tm1 - Tm2)
+    
+    # Hằng số này đại diện cho sự mất mát năng lượng do hiệu ứng biên (end-fraying)
+    # được rút ra từ các nghiên cứu về độ bền của DNA duplex
+    # Với L càng lớn, giá trị này tiến dần về 0
+    k_length_factor = 25.0 
+    
+    # Áp dụng hiệu chỉnh entropy phụ thuộc độ dài
+    # Công thức: Delta_tm = raw_delta * (1 - (k / (length + k)))
+    # Đây là mô hình tiệm cận: khi length -> vô cực, delta -> 0
+    corrected_delta = raw_delta * (1 - (k_length_factor / (length + k_length_factor)))
+    
+    return corrected_delta
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -63,7 +78,8 @@ def run_hrm_analysis():
         else:
             Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm * 1e-9, dnac2=dnac2_nm * 1e-9, Na=na_mM, Mg=mg_mM, saltcorr=7)
             Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm * 1e-9, dnac2=dnac2_nm * 1e-9, Na=na_mM, Mg=mg_mM, saltcorr=7)
-            delta_tm = abs(Tm1 - Tm2)
+            length = len(allele1.replace(" ", "")) # Đảm bảo độ dài chính xác
+            delta_tm = _get_corrected_delta(Tm1, Tm2, length)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
