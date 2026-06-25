@@ -18,6 +18,7 @@ def get_weight(dG):
     w_homo2 = get_weight(dG_homo2)
     w_het1 = get_weight(dG_het1)
     w_het2 = get_weight(dG_het2)
+   
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -98,6 +99,7 @@ def run_hrm_analysis():
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
+            total_w=w_homo1 + w_homo2 + w_het1 + w_het2
             p_homo1 = w_homo1 / total_w
             p_homo2 = w_homo2 / total_w
             p_het1 = w_het1 / total_w
