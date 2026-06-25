@@ -85,8 +85,8 @@ def run_hrm_analysis():
             with c4: st.metric("Tm Hetero 1", f"{Tm_het1:.2f} °C", delta=f"-{penalty_1:.2f}°C"); st.code(f"5'- {r1} -3'\n3'- {c_back2} -5'")
             with c5: st.metric("Tm Hetero 2", f"{Tm_het2:.2f} °C", delta=f"-{penalty_2:.2f}°C"); st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
-            t_start, t_end = min(Tm1, Tm2) - 15, max(Tm1, Tm2) + 15
-            T = np.linspace(t_start, t_end, 1000)
+            t_start, t_end = min(Tm1, Tm2) - 5, max(Tm1, Tm2) + 5
+            T = np.linspace(t_start, t_end, 10000)
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
