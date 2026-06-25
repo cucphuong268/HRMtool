@@ -81,7 +81,7 @@ def run_hrm_analysis():
             c1, c2, c3, c4, c5 = st.columns(5)
             with c1: st.metric("Tm Homo 1", f"{Tm1:.2f} °C"); st.code(f"5'- {r1} -3'\n3'- {c_back1} -5'")
             with c2: st.metric("Tm Homo 2", f"{Tm2:.2f} °C"); st.code(f"5'- {r2} -3'\n3'- {c_back2} -5'")
-            with c3: st.metric("ΔTm (Homo1-Homo2)", f"{delta_tm:.2f} °C"); st.code(f"Homo1: {r1}\nHomo2: {r2}")
+            with c3: st.metric("ΔTm (Homo1-Homo2)", f"{delta_tm:.2f} °C"))
             with c4: st.metric("Tm Hetero 1", f"{Tm_het1:.2f} °C", delta=f"-{penalty_1:.2f}°C"); st.code(f"5'- {r1} -3'\n3'- {c_back2} -5'")
             with c5: st.metric("Tm Hetero 2", f"{Tm_het2:.2f} °C", delta=f"-{penalty_2:.2f}°C"); st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
