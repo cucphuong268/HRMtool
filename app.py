@@ -122,26 +122,25 @@ def run_hrm_analysis():
             _, diff_h1_sm = get_smooth_data(T, diff_homo1, res)
             _, diff_h2_sm = get_smooth_data(T, diff_homo2, res)
             _, diff_het_sm = get_smooth_data(T, diff_het, res)
+            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
+            zoom_range = (t_start, t_end)
             
-           fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
-           zoom_range = (t_start, t_end)
-
-           ax1.plot(T_sm, F_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
-           ax1.plot(T_sm, F_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
-           ax1.plot(T_sm, F_het_sm, color=color_het, linewidth=2.5)
-           ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
-
-           ax2.plot(T_sm, dF_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
-           ax2.plot(T_sm, dF_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
-           ax2.plot(T_sm, dF_het_sm, color=color_het, linewidth=2.5)
-           ax2.set_title('B. Derivative Curve (-dF/dT)'); ax2.set_xlim(zoom_range); ax2.grid(True, linestyle=':')
-
-           style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
-           style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
-           ax3.plot(T_sm, diff_h1_sm, color=color_homo1, linestyle=style_h1, linewidth=1.5)
-           ax3.plot(T_sm, diff_h2_sm, color=color_homo2, linestyle=style_h2, linewidth=1.5)
-           ax3.plot(T_sm, diff_het_sm, color=color_het, linewidth=2.5)
-           ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
+            ax1.plot(T_sm, F_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
+            ax1.plot(T_sm, F_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
+            ax1.plot(T_sm, F_het_sm, color=color_het, linewidth=2.5)
+            ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
+            
+            ax2.plot(T_sm, dF_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
+            ax2.plot(T_sm, dF_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
+            ax2.plot(T_sm, dF_het_sm, color=color_het, linewidth=2.5)
+            ax2.set_title('B. Derivative Curve (-dF/dT)'); ax2.set_xlim(zoom_range); ax2.grid(True, linestyle=':')
+            
+            style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
+            style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
+            ax3.plot(T_sm, diff_h1_sm, color=color_homo1, linestyle=style_h1, linewidth=1.5)
+            ax3.plot(T_sm, diff_h2_sm, color=color_homo2, linestyle=style_h2, linewidth=1.5)
+            ax3.plot(T_sm, diff_het_sm, color=color_het, linewidth=2.5)
+            ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
 
 plt.tight_layout()
 # 4. Xuất đồ thị với DPI cao để tăng độ phân giải hình ảnh
