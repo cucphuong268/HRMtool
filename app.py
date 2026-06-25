@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 import Bio.SeqUtils.MeltingTemp as mt
-from Bio.SeqUtils.MeltingTemp import DNA_NN4, make_table
-from Bio.SeqUtils.MeltingTemp import compute_dH_dS
 
 # GLOBAL PAGE CONFIGURATION
 st.set_page_config(page_title="HRMTool", layout="wide")
