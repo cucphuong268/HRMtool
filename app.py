@@ -10,22 +10,23 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-def _get_scientific_delta_tm(Tm1, Tm2, length):
-    # Delta Tm lý thuyết (giả định là giá trị tại điểm bão hòa)
+def _get_corrected_delta(Tm1, Tm2, length):
+    # Tính delta Tm thô
     raw_delta = abs(Tm1 - Tm2)
     
-    # Hằng số này đại diện cho sự mất mát năng lượng do hiệu ứng biên (end-fraying)
-    # được rút ra từ các nghiên cứu về độ bền của DNA duplex
-    # Với L càng lớn, giá trị này tiến dần về 0
+    # Hằng số hiệu chỉnh dựa trên entropy (tùy chỉnh k_factor để cân chỉnh)
     k_length_factor = 25.0 
     
-    # Áp dụng hiệu chỉnh entropy phụ thuộc độ dài
-    # Công thức: Delta_tm = raw_delta * (1 - (k / (length + k)))
-    # Đây là mô hình tiệm cận: khi length -> vô cực, delta -> 0
+    # Công thức hiệu chỉnh khoa học
     corrected_delta = raw_delta * (1 - (k_length_factor / (length + k_length_factor)))
     
     return corrected_delta
 
+# Sau đó mới đến hàm chính của bạn:
+def run_hrm_analysis():
+    # ... logic của bạn ...
+    delta_tm = _get_corrected_delta(Tm1, Tm2, length) # Bây giờ Python đã biết hàm này là gì
+    # ... tiếp tục các dòng lệnh khác ...
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
