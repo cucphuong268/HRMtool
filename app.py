@@ -101,7 +101,7 @@ def run_hrm_analysis():
             with cc2: color_homo2 = st.color_picker("Homozygote 2 Color", value="#FF4500", key="cp_h2")
             with cc3: color_het = st.color_picker("Heterozygote Color", value="#8A2BE2", key="cp_het")
                 
-            fig, (ax1, ax2,ax3) = plt.subplots(3, 1, figsize=(18, 10))
+            fig, (ax1, ax2,ax3) = plt.subplots(3, 1, figsize=(18, 15))
             zoom_range = (t_start, t_end)
             ax1.plot(T, F_homo1, color=color_homo1, linestyle='--'); ax1.plot(T, F_homo2, color=color_homo2, linestyle='--'); ax1.plot(T, F_het, color=color_het, linewidth=3)
             ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
