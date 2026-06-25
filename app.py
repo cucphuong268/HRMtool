@@ -10,6 +10,29 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
+def _get_precise_tm_with_fraying(seq, saltc, mgc, dnac):
+    """
+    seq: trình tự DNA
+    saltc: nồng độ muối (mM)
+    mgc: nồng độ Magie (mM)
+    dnac: nồng độ DNA (nM)
+    """
+    fray_length = 10 
+    if len(seq) > (fray_length * 2):
+        stable_core = seq[fray_length : -fray_length]
+    else:
+        stable_core = seq
+        
+    # Truyền đúng tên tham số mà Biopython yêu cầu
+    tm_core = mt.Tm_NN(stable_core, 
+                       nn_table=mt.DNA_NN4, 
+                       saltc=saltc,       # Truyền giá trị từ tham số saltc
+                       mgc=mgc,           # Truyền giá trị từ tham số mgc
+                       dnac1=dnac,        # Truyền giá trị từ tham số dnac
+                       dnac2=dnac,        # Truyền giá trị từ tham số dnac
+                       saltcorr=7)
+    
+    return tm_core - 0.7
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
