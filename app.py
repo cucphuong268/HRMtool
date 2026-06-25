@@ -26,7 +26,7 @@ def run_hrm_analysis():
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
     k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
-
+    
     col1, col2 = st.columns(2)
     with col1:
         raw_allele1 = st.text_input("Allele 1 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCAAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq1_input")
@@ -95,8 +95,7 @@ def run_hrm_analysis():
             diff_homo1, diff_homo2, diff_het = F_homo1 - F_ref, F_homo2 - F_ref, F_het - F_ref
             
             
-            default_start = float(min(Tm1, Tm2) - 6)
-            default_end = float(max(Tm1, Tm2) + 6)
+            t_start, t_end = min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6
             t_range = st.sidebar.slider(
             "Temperature Range (°C):",60.00,95.00,(75.00, 90.00),0.01)
             t_start, t_end = t_range
