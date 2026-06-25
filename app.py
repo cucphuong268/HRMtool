@@ -10,6 +10,14 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
+R = 1.987e-3 
+T_kelvin = 328
+def get_weight(dG):
+    return np.exp(-dG / (R * T_kelvin))
+    w_homo1 = get_weight(dG_homo1)
+    w_homo2 = get_weight(dG_homo2)
+    w_het1 = get_weight(dG_het1)
+    w_het2 = get_weight(dG_het2)
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -90,7 +98,7 @@ def run_hrm_analysis():
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
-            F_het = (0.25*inverse_sigmoid(T, Tm1, k_homo) + 0.25*inverse_sigmoid(T, Tm2, k_homo) + 0.25*inverse_sigmoid(T, Tm_het1, k_hetero) + 0.25*inverse_sigmoid(T, Tm_het2, k_hetero))
+            F_het = (w_homo1*inverse_sigmoid(T, Tm1, k_homo) + w_homo2*inverse_sigmoid(T, Tm2, k_homo) + w_het1*inverse_sigmoid(T, Tm_het1, k_hetero) + w_het2*inverse_sigmoid(T, Tm_het2, k_hetero))
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
             diff_homo1, diff_homo2, diff_het = F_homo1 - F_ref, F_homo2 - F_ref, F_het - F_ref
