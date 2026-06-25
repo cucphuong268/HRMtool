@@ -15,7 +15,7 @@ def _get_corrected_delta(Tm1, Tm2, length):
     raw_delta = abs(Tm1 - Tm2)
     
     # Hằng số hiệu chỉnh dựa trên entropy (tùy chỉnh k_factor để cân chỉnh)
-    k_length_factor = 25.0 
+    k_length_factor = 15.0 
     
     # Công thức hiệu chỉnh khoa học
     corrected_delta = raw_delta * (1 - (k_length_factor / (length + k_length_factor)))
