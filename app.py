@@ -14,10 +14,12 @@ R = 1.987e-3
 T_kelvin = 328
 def get_weight(dG):
     return np.exp(-dG / (R * T_kelvin))
-    w_homo1 = get_weight(dG_homo1)
-    w_homo2 = get_weight(dG_homo2)
-    w_het1 = get_weight(dG_het1)
-    w_het2 = get_weight(dG_het2)
+def calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2):
+    w1 = get_weight(dG_homo1)
+    w2 = get_weight(dG_homo2)
+    w3 = get_weight(dG_het1)
+    w4 = get_weight(dG_het2)
+    return w1, w2, w3, w4
    
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
@@ -99,11 +101,11 @@ def run_hrm_analysis():
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
-            total_w=w_homo1 + w_homo2 + w_het1 + w_het2
-            p_homo1 = w_homo1 / total_w
-            p_homo2 = w_homo2 / total_w
-            p_het1 = w_het1 / total_w
-            p_het2 = w_het2 / total_w
+            total_w=w1 + w2 + w3 + w4
+            p_homo1 = w1 / total_w
+            p_homo2 = w2 / total_w
+            p_het1 = w3 / total_w
+            p_het2 = w4 / total_w
             F_het = (p_homo1*inverse_sigmoid(T, Tm1, k_homo) + p_homo2*inverse_sigmoid(T, Tm2, k_homo) + p_het1*inverse_sigmoid(T, Tm_het1, k_hetero) + p_het2*inverse_sigmoid(T, Tm_het2, k_hetero))
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
