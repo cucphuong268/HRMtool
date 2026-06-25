@@ -2,6 +2,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+import Bio.SeqUtils.MeltingTemp as mt
 
 
 # GLOBAL PAGE CONFIGURATION
