@@ -134,7 +134,6 @@ def run_primer_designer():
         st.warning("Please enter a valid template sequence matrix.")
         return
 
-    # Sửa đổi Regex bao dung lỗi khoảng trắng bên trong dấu ngoặc vuông
     match = re.search(r"\[\s*([A-Z])\s*/\s*([A-Z])\s*\]", clean_seq)
     if match:
         nu1 = match.group(1)
@@ -152,7 +151,7 @@ def run_primer_designer():
 
     # SIDEBAR PANEL
     st.sidebar.header("Design Filtering Thresholds")
-    max_display_pairs = st.sidebar.slider("Maximum pairs to display:", 5, 50, 10, key="pd_max_display")
+    max_display_pairs = st.sidebar.slider("Maximum pairs to display:", 5, 1000, 10, key="pd_max_display")
     
     st.sidebar.subheader("Secondary Structure Rules")
     max_sec_tm = st.sidebar.slider("Max Allowable Structure Tm (°C):", 20.0, 80.0, 58.0, 0.5, key="p_max_sec_tm")
@@ -176,6 +175,8 @@ def run_primer_designer():
     st.sidebar.subheader("PCR Product Dimensions")
     prod_len_min = st.sidebar.number_input("Min Target Amplicon Size (bp):", 15, 500, 20, key="pr_min")
     prod_len_max = st.sidebar.number_input("Max Target Amplicon Size (bp):", 40, 2000, 1000, key="pr_max")
+    
+    min_dist_to_snp = st.sidebar.number_input("Min distance from primer to SNP (bp):", min_value=0, max_value=50, value=2)
 
     def reverse_complement(seq):
         comp = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
@@ -238,15 +239,20 @@ def run_primer_designer():
             seen_pairs = set()  
             L = len(seq_base_1)
             
-            # GIẢI THUẬT LỚN: Quét toàn bộ không gian tọa độ vật lý bao quanh vị trí SNP
             for f_start in range(0, L):
                 for f_len in range(p_len_min, p_len_max + 1):
                     f_end = f_start + f_len
-                    if f_end > L or f_end > snp_idx + 1: continue
                     
+                    # Kiểm tra khoảng cách mồi xuôi so với SNP
+                    if f_end > (snp_idx - min_dist_to_snp): continue
+                    if f_end > L: continue
+            
                     f_seq = seq_base_1[f_start:f_end]
-                    
+            
                     for r_start in range(max(f_end, snp_idx), L):
+                        # Kiểm tra khoảng cách mồi ngược so với SNP
+                        if r_start < (snp_idx + min_dist_to_snp + 1): continue
+                
                         for r_len in range(p_len_min, p_len_max + 1):
                             r_end = r_start + r_len
                             if r_end > L: continue
@@ -264,7 +270,6 @@ def run_primer_designer():
                             f_gc = (f_seq.count('G') + f_seq.count('C')) / f_len * 100
                             r_gc = (r_seq.count('G') + r_seq.count('C')) / r_len * 100
                             
-                            # Khắc phục lỗi Tm_NN bằng công thức dự phòng Wallace thực nghiệm
                             f_tm = (f_seq.count('G') + f_seq.count('C')) * 4 + (f_seq.count('A') + f_seq.count('T')) * 2
                             r_tm = (r_seq.count('G') + r_seq.count('C')) * 4 + (r_seq.count('A') + r_seq.count('T')) * 2
                             
