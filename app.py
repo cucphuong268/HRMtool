@@ -1,6 +1,5 @@
 import re
 import numpy as np
-from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import streamlit as st
 import Bio.SeqUtils.MeltingTemp as mt
@@ -11,10 +10,6 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-def get_smooth_data(T, F, resolution):
-    T_new = np.linspace(min(T), max(T), resolution)
-    f = interp1d(T, F, kind='cubic')
-    return T_new, f(T_new)
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -32,7 +27,6 @@ def run_hrm_analysis():
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
     k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
-    resolution = st.sidebar.slider("Resolution:", 100, 2000, 500, 100) 
 
     col1, col2 = st.columns(2)
     with col1:
@@ -109,45 +103,18 @@ def run_hrm_analysis():
             with cc1: color_homo1 = st.color_picker("Homozygote 1 Color", value="#1E90FF", key="cp_h1")
             with cc2: color_homo2 = st.color_picker("Homozygote 2 Color", value="#FF4500", key="cp_h2")
             with cc3: color_het = st.color_picker("Heterozygote Color", value="#8A2BE2", key="cp_het")
-                
-            res = resolution 
-            T_sm, F_h1_sm = get_smooth_data(T, F_homo1, res)
-            _, F_h2_sm = get_smooth_data(T, F_homo2, res)
-            _, F_het_sm = get_smooth_data(T, F_het, res)
-
-            _, dF_h1_sm = get_smooth_data(T, dF_homo1, res)
-            _, dF_h2_sm = get_smooth_data(T, dF_homo2, res)
-            _, dF_het_sm = get_smooth_data(T, dF_het, res)
- 
-            _, diff_h1_sm = get_smooth_data(T, diff_homo1, res)
-            _, diff_h2_sm = get_smooth_data(T, diff_homo2, res)
-            _, diff_het_sm = get_smooth_data(T, diff_het, res)
-            st.write(f"Số điểm dữ liệu đang vẽ: {len(T_sm)}")
+           
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
             zoom_range = (t_start, t_end)
-            
-            ax1.plot(T_sm, F_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
-            ax1.plot(T_sm, F_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
-            ax1.plot(T_sm, F_het_sm, color=color_het, linewidth=2.5)
+            ax1.plot(T, F_homo1, color=color_homo1, linestyle='--'); ax1.plot(T, F_homo2, color=color_homo2, linestyle='--'); ax1.plot(T, F_het, color=color_het, linewidth=3)
             ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
-            
-            ax2.plot(T_sm, dF_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
-            ax2.plot(T_sm, dF_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
-            ax2.plot(T_sm, dF_het_sm, color=color_het, linewidth=2.5)
+            ax2.plot(T, dF_homo1, color=color_homo1, linestyle='--'); ax2.plot(T, dF_homo2, color=color_homo2, linestyle='--'); ax2.plot(T, dF_het, color=color_het, linewidth=3)
             ax2.set_title('B. Derivative Curve (-dF/dT)'); ax2.set_xlim(zoom_range); ax2.grid(True, linestyle=':')
-            
             style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
             style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
-            ax3.plot(T_sm, diff_h1_sm, color=color_homo1, linestyle=style_h1, linewidth=1.5)
-            ax3.plot(T_sm, diff_h2_sm, color=color_homo2, linestyle=style_h2, linewidth=1.5)
-            ax3.plot(T_sm, diff_het_sm, color=color_het, linewidth=2.5)
+            ax3.plot(T, diff_homo1, color=color_homo1, linestyle=style_h1); ax3.plot(T, diff_homo2, color=color_homo2, linestyle=style_h2); ax3.plot(T, diff_het, color=color_het, linewidth=3)
             ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
-
-            plt.tight_layout()
-            # 4. Xuất đồ thị với DPI cao để tăng độ phân giải hình ảnh
-            st.pyplot(fig, dpi=300)
-
-
+            plt.tight_layout(); st.pyplot(fig)
 # ==========================================
 # TASK 2: AUTOMATED PRIMER DESIGNER FUNCTION
 # ==========================================
