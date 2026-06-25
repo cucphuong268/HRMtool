@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 import Bio.SeqUtils.MeltingTemp as mt
+from Bio.Seq import Seq
 
 # GLOBAL PAGE CONFIGURATION
 st.set_page_config(page_title="HRMTool", layout="wide")
