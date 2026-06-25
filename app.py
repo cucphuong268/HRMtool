@@ -17,7 +17,7 @@ def _get_precise_tm_with_fraying(seq, saltc, mgc, dnac):
     mgc: nồng độ Magie (mM)
     dnac: nồng độ DNA (nM)
     """
-    fray_length = 10 
+    fray_length = 15 
     if len(seq) > (fray_length * 2):
         stable_core = seq[fray_length : -fray_length]
     else:
