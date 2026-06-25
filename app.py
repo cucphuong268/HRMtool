@@ -22,7 +22,7 @@ def run_hrm_analysis():
     dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac2")
     na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 50, 10, key="hrm_na")
     mg_mM = st.sidebar.number_input("Mg2+ Conc. (mM):", 0.0, 10.0, 3.0, 0.5, key="hrm_mg")
-    dNTPs_mM = st.sidebar.number_input("dNTPs Conc. (mM):", 0.0, 2, 0.2, 0.05, key="hrm_dNTPs")
+    dNTPs_mM = st.sidebar.number_input("dNTPs Conc. (mM):", 0.00, 2.00, 0.20, 0.05, key="hrm_dNTPs")
 
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
