@@ -142,9 +142,9 @@ def run_hrm_analysis():
             ax3.plot(T_sm, diff_het_sm, color=color_het, linewidth=2.5)
             ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
 
-plt.tight_layout()
-# 4. Xuất đồ thị với DPI cao để tăng độ phân giải hình ảnh
-st.pyplot(fig, dpi=300)
+            plt.tight_layout()
+            # 4. Xuất đồ thị với DPI cao để tăng độ phân giải hình ảnh
+            st.pyplot(fig, dpi=300)
 
 
 # ==========================================
