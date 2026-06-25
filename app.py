@@ -10,8 +10,6 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-# Sau đó mới đến hàm chính của bạn:
-
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -28,11 +26,7 @@ def run_hrm_analysis():
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
     k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
-    Tm1 = _get_precise_tm(allele1)
-    Tm2 = _get_precise_tm(allele2)
-    
-    # Delta giữ nguyên như logic cũ của bạn
-    delta_tm = abs(Tm1 - Tm2)
+
     col1, col2 = st.columns(2)
     with col1:
         raw_allele1 = st.text_input("Allele 1 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCAAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq1_input")
@@ -69,7 +63,6 @@ def run_hrm_analysis():
         else:
             Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
             Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
-            length = len(allele1.replace(" ", "")) # Đảm bảo độ dài chính xác
             delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
@@ -88,11 +81,11 @@ def run_hrm_analysis():
             c1, c2, c3, c4, c5 = st.columns(5)
             with c1: st.metric("Tm Homo 1", f"{Tm1:.2f} °C"); st.code(f"5'- {r1} -3'\n3'- {c_back1} -5'")
             with c2: st.metric("Tm Homo 2", f"{Tm2:.2f} °C"); st.code(f"5'- {r2} -3'\n3'- {c_back2} -5'")
-            with c3: st.metric("ΔTm (Homo1-Homo2)", f"{delta_tm:.2f} °C")
+            with c3: st.metric("ΔTm (Homo1-Homo2)", f"{delta_tm:.2f} °C"); st.code(f"Homo1: {r1}\nHomo2: {r2}")
             with c4: st.metric("Tm Hetero 1", f"{Tm_het1:.2f} °C", delta=f"-{penalty_1:.2f}°C"); st.code(f"5'- {r1} -3'\n3'- {c_back2} -5'")
             with c5: st.metric("Tm Hetero 2", f"{Tm_het2:.2f} °C", delta=f"-{penalty_2:.2f}°C"); st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
-            t_start, t_end = min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6
+            t_start, t_end = min(Tm1, Tm2) - 15, max(Tm1, Tm2) + 15
             T = np.linspace(t_start, t_end, 1000)
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
