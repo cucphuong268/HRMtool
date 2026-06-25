@@ -61,14 +61,14 @@ def run_hrm_analysis():
         if len(allele1) != len(allele2):
             st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
         else:
-            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
-            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
+            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=6)
+            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=6)
             delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
-                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
-                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
+                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=6)
+                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=6)
                 penalty_1, penalty_2 = Tm1 - Tm_het1, Tm2 - Tm_het2
             except:
                 penalty_1, penalty_2 = 1.5, 1.5
@@ -85,7 +85,7 @@ def run_hrm_analysis():
             with c4: st.metric("Tm Hetero 1", f"{Tm_het1:.2f} °C", delta=f"-{penalty_1:.2f}°C"); st.code(f"5'- {r1} -3'\n3'- {c_back2} -5'")
             with c5: st.metric("Tm Hetero 2", f"{Tm_het2:.2f} °C", delta=f"-{penalty_2:.2f}°C"); st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
-            t_start, t_end = min(Tm1, Tm2) - 15, max(Tm1, Tm2) + 15
+            t_start, t_end = min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6
             T = np.linspace(t_start, t_end, 1000)
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
