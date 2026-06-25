@@ -2,8 +2,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
-import Bio.SeqUtils.MeltingTemp as mt
-from Bio.Seq import Seq
+
 
 # GLOBAL PAGE CONFIGURATION
 st.set_page_config(page_title="HRMTool", layout="wide")
@@ -11,26 +10,6 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-R = 1.987e-3 
-T_kelvin = 313.15
-def get_weight(dG, R, T_kelvin):
-    return np.exp(-dG / (R * T_kelvin))
-def get_thermo_params(seq1_str, seq2_str, is_mismatch=False):
-    # Chuyển string sang đối tượng Seq
-    seq1 = Seq(seq1_str)
-    seq2 = Seq(seq2_str)
-    
-    table = mt.DNA_IMM1 if is_mismatch else mt.DNA_NN4
-    
-
-    params = mt.nearest_neighbor_parameters(seq1, seq2, nn_table=table)
-    
-    dH = params['dH']
-    dS = params['dS']
-    
-    T_k = 40 + 273.15
-    dG = dH - (T_k * (dS / 1000))
-    return dG
 
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
@@ -109,26 +88,11 @@ def run_hrm_analysis():
 
             t_start, t_end = min(Tm_het1, Tm_het2) - 5, max(Tm1, Tm2) + 5
             T = np.linspace(t_start, t_end, 1000000)
-            dG_homo1 = get_thermo_params(allele1, allele1, is_mismatch=False)
-            dG_homo2 = get_thermo_params(allele2, allele2, is_mismatch=False)
-            dG_het1  = get_thermo_params(allele1, c_seq=comp_allele2_3to5, is_mismatch=True)
-            dG_het2  = get_thermo_params(allele2, c_seq=comp_allele1_3to5, is_mismatch=True)
-        
-            w_homo1 = get_weight(dG_homo1)
-            w_homo2 = get_weight(dG_homo2)
-            w_het1  = get_weight(dG_het1)
-            w_het2  = get_weight(dG_het2)
-         
-            total_w = w_homo1 + w_homo2 + w_het1 + w_het2
-            
-            p_homo1 = w_homo1 / total_w
-            p_homo2 = w_homo2 / total_w
-            p_het1  = w_het1 / total_w
-            p_het2  = w_het2 / total_w
+
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
-            F_het = (p_homo1*inverse_sigmoid(T, Tm1, k_homo) + p_homo2*inverse_sigmoid(T, Tm2, k_homo) + p_het1*inverse_sigmoid(T, Tm_het1, k_hetero) + p_het2*inverse_sigmoid(T, Tm_het2, k_hetero))
+            F_het = (0.25*inverse_sigmoid(T, Tm1, k_homo) + 0.25*inverse_sigmoid(T, Tm2, k_homo) + 0.25*inverse_sigmoid(T, Tm_het1, k_hetero) + 0.25*inverse_sigmoid(T, Tm_het2, k_hetero))
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
             diff_homo1, diff_homo2, diff_het = F_homo1 - F_ref, F_homo2 - F_ref, F_het - F_ref
