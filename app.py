@@ -10,29 +10,6 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-def _get_precise_tm_with_fraying(seq, saltc, mgc, dnac):
-    """
-    seq: trình tự DNA
-    saltc: nồng độ muối (mM)
-    mgc: nồng độ Magie (mM)
-    dnac: nồng độ DNA (nM)
-    """
-    fray_length = 15 
-    if len(seq) > (fray_length * 2):
-        stable_core = seq[fray_length : -fray_length]
-    else:
-        stable_core = seq
-        
-    # Truyền đúng tên tham số mà Biopython yêu cầu
-    tm_core = mt.Tm_NN(stable_core, 
-                       nn_table=mt.DNA_NN4, 
-                       saltc=saltc,       # Truyền giá trị từ tham số saltc
-                       mgc=mgc,           # Truyền giá trị từ tham số mgc
-                       dnac1=dnac,        # Truyền giá trị từ tham số dnac
-                       dnac2=dnac,        # Truyền giá trị từ tham số dnac
-                       saltcorr=7)
-    
-    return tm_core - 1
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -43,8 +20,9 @@ def run_hrm_analysis():
     st.sidebar.markdown("**PCR Reaction Conditions**")
     dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1")
     dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1_2")
-    na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 20, 10, key="hrm_na")
+    na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 50, 10, key="hrm_na")
     mg_mM = st.sidebar.number_input("Mg2+ Conc. (mM):", 0.0, 10.0, 3.0, 0.5, key="hrm_mg")
+
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
     k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
@@ -83,14 +61,14 @@ def run_hrm_analysis():
         if len(allele1) != len(allele2):
             st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
         else:
-            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM, saltcorr=7)
-            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM, saltcorr=7)
+            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
+            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
             delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
-                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM, saltcorr=7)
-                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM, saltcorr=7)
+                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
+                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM)
                 penalty_1, penalty_2 = Tm1 - Tm_het1, Tm2 - Tm_het2
             except:
                 penalty_1, penalty_2 = 1.5, 1.5
