@@ -14,12 +14,19 @@ R = 1.987e-3
 T_kelvin = 313.15
 def get_weight(dG, R, T_kelvin):
     return np.exp(-dG / (R * T_kelvin))
-def get_thermo_params(seq1, seq2, is_mismatch=False):
-    # Chọn bảng tham số dựa trên loại duplex
+def get_thermo_params(seq1_str, seq2_str, is_mismatch=False):
+    # Chuyển string sang đối tượng Seq
+    seq1 = Seq(seq1_str)
+    seq2 = Seq(seq2_str)
+    
     table = mt.DNA_IMM1 if is_mismatch else mt.DNA_NN4
-    params = mt.nearest_neighbor_parameters(seq1, seq2, table=table)
+    
+
+    params = mt.nearest_neighbor_parameters(seq1, seq2, nn_table=table)
+    
     dH = params['dH']
     dS = params['dS']
+    
     T_k = 40 + 273.15
     dG = dH - (T_k * (dS / 1000))
     return dG
