@@ -73,8 +73,8 @@ def run_hrm_analysis():
         if len(allele1) != len(allele2):
             st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
         else:
-            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm * 1e-9, dnac2=dnac2_nm * 1e-9, Na=na_mM, Mg=mg_mM, saltcorr=7)
-            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm * 1e-9, dnac2=dnac2_nm * 1e-9, Na=na_mM, Mg=mg_mM, saltcorr=7)
+            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
+            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM, saltcorr=7)
             length = len(allele1.replace(" ", "")) # Đảm bảo độ dài chính xác
             delta_tm = _get_corrected_delta(Tm1, Tm2, length)
             comp_allele1_3to5 = get_complement_3to5(allele1)
