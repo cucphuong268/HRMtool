@@ -16,6 +16,10 @@ def run_hrm_analysis():
 
     st.sidebar.header("HRM Configuration")
     ref_selection = st.sidebar.selectbox("Select Reference Baseline:", options=["Homozygote 1", "Homozygote 2"], key="hrm_ref_select")
+    t_range = st.sidebar.slider(
+        "Temperature Range (°C):",60.00,95.00,(75.00, 90.00),0.01)
+    t_start, t_end = t_range
+    T_sm = np.linspace(t_start, t_end, resolution)
 
     st.sidebar.markdown("**PCR Reaction Conditions**")
     dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1")
@@ -104,17 +108,49 @@ def run_hrm_analysis():
             with cc2: color_homo2 = st.color_picker("Homozygote 2 Color", value="#FF4500", key="cp_h2")
             with cc3: color_het = st.color_picker("Heterozygote Color", value="#8A2BE2", key="cp_het")
            
-            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
-            zoom_range = (t_start, t_end)
-            ax1.plot(T, F_homo1, color=color_homo1, linestyle='--'); ax1.plot(T, F_homo2, color=color_homo2, linestyle='--'); ax1.plot(T, F_het, color=color_het, linewidth=3)
-            ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
-            ax2.plot(T, dF_homo1, color=color_homo1, linestyle='--'); ax2.plot(T, dF_homo2, color=color_homo2, linestyle='--'); ax2.plot(T, dF_het, color=color_het, linewidth=3)
-            ax2.set_title('B. Derivative Curve (-dF/dT)'); ax2.set_xlim(zoom_range); ax2.grid(True, linestyle=':')
-            style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
-            style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
-            ax3.plot(T, diff_homo1, color=color_homo1, linestyle=style_h1); ax3.plot(T, diff_homo2, color=color_homo2, linestyle=style_h2); ax3.plot(T, diff_het, color=color_het, linewidth=3)
-            ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
-            plt.tight_layout(); st.pyplot(fig)
+          # 1. Nội suy dữ liệu dựa trên resolution và T_sm đã tạo từ slider
+        _, F_h1_sm = get_smooth_data(T, F_homo1, resolution)
+        _, F_h2_sm = get_smooth_data(T, F_homo2, resolution)
+        _, F_het_sm = get_smooth_data(T, F_het, resolution)
+        
+        _, dF_h1_sm = get_smooth_data(T, dF_homo1, resolution)
+        _, dF_h2_sm = get_smooth_data(T, dF_homo2, resolution)
+        _, dF_het_sm = get_smooth_data(T, dF_het, resolution)
+        
+        _, diff_h1_sm = get_smooth_data(T, diff_homo1, resolution)
+        _, diff_h2_sm = get_smooth_data(T, diff_homo2, resolution)
+        _, diff_het_sm = get_smooth_data(T, diff_het, resolution)
+        
+        # 2. Vẽ đồ thị
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
+        
+        # Đồ thị A: Aligned Melting Curve
+        ax1.plot(T_sm, F_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
+        ax1.plot(T_sm, F_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
+        ax1.plot(T_sm, F_het_sm, color=color_het, linewidth=2.5)
+        ax1.set_title('A. Aligned Melting Curve')
+        ax1.set_xlim(t_start, t_end)
+        ax1.grid(True, linestyle=':')
+        
+        # Đồ thị B: Derivative Curve
+        ax2.plot(T_sm, dF_h1_sm, color=color_homo1, linestyle='--', linewidth=1.5)
+        ax2.plot(T_sm, dF_h2_sm, color=color_homo2, linestyle='--', linewidth=1.5)
+        ax2.plot(T_sm, dF_het_sm, color=color_het, linewidth=2.5)
+        ax2.set_title('B. Derivative Curve (-dF/dT)')
+        ax2.set_xlim(t_start, t_end)
+        ax2.grid(True, linestyle=':')
+        
+        # Đồ thị C: Difference Plot
+        style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
+        style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
+        ax3.plot(T_sm, diff_h1_sm, color=color_homo1, linestyle=style_h1, linewidth=1.5)
+        ax3.plot(T_sm, diff_h2_sm, color=color_homo2, linestyle=style_h2, linewidth=1.5)
+        ax3.plot(T_sm, diff_het_sm, color=color_het, linewidth=2.5)
+        ax3.set_title(f'C. Difference Plot ({ref_selection})')
+        ax3.set_xlim(t_start, t_end)
+        ax3.grid(True, linestyle=':')
+        
+        plt.tight_layout()
 # ==========================================
 # TASK 2: AUTOMATED PRIMER DESIGNER FUNCTION
 # ==========================================
