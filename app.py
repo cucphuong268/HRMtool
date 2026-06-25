@@ -122,6 +122,7 @@ def run_hrm_analysis():
             _, diff_h1_sm = get_smooth_data(T, diff_homo1, res)
             _, diff_h2_sm = get_smooth_data(T, diff_homo2, res)
             _, diff_het_sm = get_smooth_data(T, diff_het, res)
+            st.write(f"Số điểm dữ liệu đang vẽ: {len(T_sm)}")
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
             zoom_range = (t_start, t_end)
             
