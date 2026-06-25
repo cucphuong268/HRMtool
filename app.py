@@ -32,7 +32,7 @@ def _get_precise_tm_with_fraying(seq, saltc, mgc, dnac):
                        dnac2=dnac,        # Truyền giá trị từ tham số dnac
                        saltcorr=7)
     
-    return tm_core - 0.7
+    return tm_core - 1
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
