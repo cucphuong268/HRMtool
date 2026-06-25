@@ -107,7 +107,8 @@ def run_hrm_analysis():
             ax1.set_title('A. Aligned Melting Curve'); ax1.set_xlim(zoom_range); ax1.grid(True, linestyle=':')
             ax2.plot(T, dF_homo1, color=color_homo1, linestyle='--'); ax2.plot(T, dF_homo2, color=color_homo2, linestyle='--'); ax2.plot(T, dF_het, color=color_het, linewidth=3)
             ax2.set_title('B. Derivative Curve (-dF/dT)'); ax2.set_xlim(zoom_range); ax2.grid(True, linestyle=':')
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 5.5))
+            fig, (ax3) = plt.subplots(1, 1, figsize=(18, 5.5))
+            zoom_range = (t_start, t_end)
             style_h1 = ':' if ref_selection == "Homozygote 1" else '-'
             style_h2 = ':' if ref_selection == "Homozygote 2" else '-'
             ax3.plot(T, diff_homo1, color=color_homo1, linestyle=style_h1); ax3.plot(T, diff_homo2, color=color_homo2, linestyle=style_h2); ax3.plot(T, diff_het, color=color_het, linewidth=3)
