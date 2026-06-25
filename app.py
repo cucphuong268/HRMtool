@@ -24,8 +24,8 @@ def run_hrm_analysis():
     dNTPs_mM = st.sidebar.number_input("dNTPs Conc. (mM):", 0.00, 2.00, 0.50, 0.05, key="hrm_dNTPs")
 
     st.sidebar.markdown("**Slope Factors (k)**")
-    k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
-    k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.80, 0.01, key="hrm_khet")
+    k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.30, 0.01, key="hrm_khomo")
+    k_hetero = st.sidebar.slider("k for Heteroduplex:", 0.1, 2.0, 0.60, 0.01, key="hrm_khet")
     
     col1, col2 = st.columns(2)
     with col1:
