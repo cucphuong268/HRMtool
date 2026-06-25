@@ -89,11 +89,15 @@ def run_hrm_analysis():
 
             t_start, t_end = min(Tm_het1, Tm_het2) - 5, max(Tm1, Tm2) + 5
             T = np.linspace(t_start, t_end, 1000000)
-
+            Tm_total= Tm1 + Tm2 + Tm_het1 + Tm_het2
+            p1=Tm1/Tm_total
+            p2=Tm2/Tm_total
+            p3=Tm_het1/Tm_total
+            p4=Tm_het2/Tm_total
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
-            F_het = (0.25*inverse_sigmoid(T, Tm1, k_homo) + 0.25*inverse_sigmoid(T, Tm2, k_homo) + 0.25*inverse_sigmoid(T, Tm_het1, k_hetero) + 0.25*inverse_sigmoid(T, Tm_het2, k_hetero))
+            F_het = (p1*inverse_sigmoid(T, Tm1, k_homo) + p2*inverse_sigmoid(T, Tm2, k_homo) + p3*inverse_sigmoid(T, Tm_het1, k_hetero) + p4*inverse_sigmoid(T, Tm_het2, k_hetero))
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
             diff_homo1, diff_homo2, diff_het = F_homo1 - F_ref, F_homo2 - F_ref, F_het - F_ref
