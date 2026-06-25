@@ -19,7 +19,7 @@ def run_hrm_analysis():
 
     st.sidebar.markdown("**PCR Reaction Conditions**")
     dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1")
-    dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1_2")
+    dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac2")
     na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 50, 10, key="hrm_na")
     mg_mM = st.sidebar.number_input("Mg2+ Conc. (mM):", 0.0, 10.0, 3.0, 0.5, key="hrm_mg")
 
@@ -61,14 +61,14 @@ def run_hrm_analysis():
         if len(allele1) != len(allele2):
             st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
         else:
-            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM-1)
-            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM-1)
+            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, Na=na_mM, Mg=mg_mM)
+            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, Na=na_mM, Mg=mg_mM)
             delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
-                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM-1)
-                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Na=na_mM, Mg=mg_mM-1)
+                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, Na=na_mM, Mg=mg_mM)
+                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, Na=na_mM, Mg=mg_mM)
                 penalty_1, penalty_2 = Tm1 - Tm_het1, Tm2 - Tm_het2
             except:
                 penalty_1, penalty_2 = 1.5, 1.5
@@ -359,7 +359,7 @@ def run_primer_designer():
         html_str += "<b> -3'</b></div>"
         st.write(html_str, unsafe_allow_html=True)
         
-        st.markdown("#### Predicted Melting Temperatures ($T_m$) of Final PCR Product (Amplicon)")
+        st.markdown("#### Predicted Melting Temperatures ($T_m$) of PCR Product")
         m_col1, m_col2, m_col3 = st.columns(3)
         with m_col1: st.metric("Homo 1 Tm", f"{chosen_pair['prod_tm1']:.2f} °C")
         with m_col2: st.metric("Homo 2 Tm", f"{chosen_pair['prod_tm2']:.2f} °C")
