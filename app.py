@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 import Bio.SeqUtils.MeltingTemp as mt
+from Bio.SeqUtils.MeltingTemp import DNA_NN4, make_table
+from Bio.SeqUtils.MeltingTemp import compute_dH_dS
 
 # GLOBAL PAGE CONFIGURATION
 st.set_page_config(page_title="HRMTool", layout="wide")
@@ -10,17 +12,13 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-R = 1.987e-3 
-T_kelvin = 328
-def get_weight(dG):
-    return np.exp(-dG / (R * T_kelvin))
 def calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2):
     w1 = get_weight(dG_homo1)
     w2 = get_weight(dG_homo2)
     w3 = get_weight(dG_het1)
     w4 = get_weight(dG_het2)
     return w1, w2, w3, w4
-w_homo1, w_homo2, w_het1, w_het2 = calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2)
+
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
     st.markdown("---")
@@ -45,7 +43,13 @@ def run_hrm_analysis():
     with col2:
         raw_allele2 = st.text_input("Allele 2 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCCAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq2_input")
         allele2 = raw_allele2.upper().replace(" ", "") 
-
+    table = make_table(DNA_NN4)
+    dH, dS = compute_dH_dS(seq, c_seq, table)
+    R_kcal = 1.987e-3  
+    T_target = 40 + 273.15 
+    dG = dH - (T_target * dS)
+    w_homo1, w_homo2, w_het1, w_het2 = calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2, R, T_kelvin)
+    
     def get_complement_3to5(seq):
         complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
         return "".join(complement.get(base, base) for base in seq)
