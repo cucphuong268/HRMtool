@@ -10,12 +10,19 @@ st.set_page_config(page_title="HRMTool", layout="wide")
 # ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
 # ==========================================
-def calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2):
-    w1 = get_weight(dG_homo1)
-    w2 = get_weight(dG_homo2)
-    w3 = get_weight(dG_het1)
-    w4 = get_weight(dG_het2)
-    return w1, w2, w3, w4
+R = 1.987e-3 
+T_kelvin = 313.15
+def get_weight(dG, R, T_kelvin):
+    return np.exp(-dG / (R * T_kelvin))
+def get_thermo_params(seq1, seq2, is_mismatch=False):
+    # Chọn bảng tham số dựa trên loại duplex
+    table = mt.DNA_IMM1 if is_mismatch else mt.DNA_NN4
+    params = mt.nearest_neighbor_parameters(seq1, seq2, table=table)
+    dH = params['dH']
+    dS = params['dS']
+    T_k = 40 + 273.15
+    dG = dH - (T_k * (dS / 1000))
+    return dG
 
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
@@ -41,12 +48,6 @@ def run_hrm_analysis():
     with col2:
         raw_allele2 = st.text_input("Allele 2 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCCAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq2_input")
         allele2 = raw_allele2.upper().replace(" ", "") 
-    dH_homo, dS_homo = mt.nearest_neighbor_parameters(seq, c_seq, table=mt.DNA_NN4)
-    dH_het, dS_het = mt.nearest_neighbor_parameters(seq, c_seq, table=mt.DNA_IMM1)
-    R_kcal = 1.987e-3  
-    T_target = 40 + 273.15 
-    dG = dH - (T_target * dS)
-    w_homo1, w_homo2, w_het1, w_het2 = calculate_all_weights(dG_homo1, dG_homo2, dG_het1, dG_het2, R, T_kelvin)
     
     def get_complement_3to5(seq):
         complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
@@ -100,14 +101,25 @@ def run_hrm_analysis():
 
             t_start, t_end = min(Tm_het1, Tm_het2) - 5, max(Tm1, Tm2) + 5
             T = np.linspace(t_start, t_end, 1000000)
+            dG_homo1 = get_thermo_params(allele1, allele1, is_mismatch=False)
+            dG_homo2 = get_thermo_params(allele2, allele2, is_mismatch=False)
+            dG_het1  = get_thermo_params(allele1, c_seq=comp_allele2_3to5, is_mismatch=True)
+            dG_het2  = get_thermo_params(allele2, c_seq=comp_allele1_3to5, is_mismatch=True)
+        
+            w_homo1 = get_weight(dG_homo1)
+            w_homo2 = get_weight(dG_homo2)
+            w_het1  = get_weight(dG_het1)
+            w_het2  = get_weight(dG_het2)
+         
+            total_w = w_homo1 + w_homo2 + w_het1 + w_het2
+            
+            p_homo1 = w_homo1 / total_w
+            p_homo2 = w_homo2 / total_w
+            p_het1  = w_het1 / total_w
+            p_het2  = w_het2 / total_w
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
             F_homo2 = inverse_sigmoid(T, Tm2, k_homo)
-            total_w=w_homo1 + w_homo2 + w_het1 + w_het2
-            p_homo1 = w_homo1 / total_w
-            p_homo2 = w_homo2 / total_w
-            p_het1 = w_het1 / total_w
-            p_het2 = w_het2 / total_w
             F_het = (p_homo1*inverse_sigmoid(T, Tm1, k_homo) + p_homo2*inverse_sigmoid(T, Tm2, k_homo) + p_het1*inverse_sigmoid(T, Tm_het1, k_hetero) + p_het2*inverse_sigmoid(T, Tm_het2, k_hetero))
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
