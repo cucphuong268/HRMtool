@@ -41,8 +41,8 @@ def run_hrm_analysis():
     with col2:
         raw_allele2 = st.text_input("Allele 2 Sequence (5' -> 3'):", value="AGCCAAAACAGCCTTAAATAGCATTCCAACACTCTTTCTTCCATGCCTTCAGTCCTGC", key="hrm_seq2_input")
         allele2 = raw_allele2.upper().replace(" ", "") 
-    table = make_table(DNA_NN4)
-    dH, dS = compute_dH_dS(seq, c_seq, table)
+    dH_homo, dS_homo = mt.nearest_neighbor_parameters(seq, c_seq, table=mt.DNA_NN4)
+    dH_het, dS_het = mt.nearest_neighbor_parameters(seq, c_seq, table=mt.DNA_IMM1)
     R_kcal = 1.987e-3  
     T_target = 40 + 273.15 
     dG = dH - (T_target * dS)
