@@ -17,8 +17,8 @@ def run_hrm_analysis():
     ref_selection = st.sidebar.selectbox("Select Reference Baseline:", options=["Homozygote 1", "Homozygote 2"], key="hrm_ref_select")
 
     st.sidebar.markdown("**PCR Reaction Conditions**")
-    dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1")
-    dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac2")
+    dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 200, 1, key="hrm_dnac1")
+    dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 200, 1, key="hrm_dnac2")
     na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 10, 10, key="hrm_na")
     mg_mM = st.sidebar.number_input("Mg2+ Conc. (mM):", 0.0, 10.0, 3.0, 0.5, key="hrm_mg")
     dNTPs_mM = st.sidebar.number_input("dNTPs Conc. (mM):", 0.00, 2.00, 0.20, 0.05, key="hrm_dNTPs")
