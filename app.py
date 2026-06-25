@@ -20,6 +20,7 @@ def run_hrm_analysis():
     st.sidebar.markdown("**PCR Reaction Conditions**")
     dnac1_nm = st.sidebar.number_input("DNA 1 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1")
     dnac2_nm = st.sidebar.number_input("DNA 2 Conc. (nM):", 1, 2000, 10, 1, key="hrm_dnac1_2")
+    na_mM = st.sidebar.number_input("Na+ Conc. (mM):", 0, 500, 20, 10, key="hrm_na")
     mg_mM = st.sidebar.number_input("Mg2+ Conc. (mM):", 0.0, 10.0, 3.0, 0.5, key="hrm_mg")
     st.sidebar.markdown("**Slope Factors (k)**")
     k_homo = st.sidebar.slider("k for Homoduplex:", 0.1, 1.0, 0.40, 0.01, key="hrm_khomo")
@@ -59,14 +60,14 @@ def run_hrm_analysis():
         if len(allele1) != len(allele2):
             st.error("⚠️ Error: Sequence lengths must be equal for alignment.")
         else:
-            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM)
-            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM)
+            Tm1 = mt.Tm_NN(allele1, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM)
+            Tm2 = mt.Tm_NN(allele2, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM)
             delta_tm = abs(Tm1 - Tm2)
             comp_allele1_3to5 = get_complement_3to5(allele1)
             comp_allele2_3to5 = get_complement_3to5(allele2)
             try:
-                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM)
-                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM)
+                Tm_het1 = mt.Tm_NN(allele1, c_seq=comp_allele2_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM)
+                Tm_het2 = mt.Tm_NN(allele2, c_seq=comp_allele1_3to5, nn_table=mt.DNA_NN4, dnac1=dnac1_nm, dnac2=dnac2_nm, Mg=mg_mM, Na=na_mM)
                 penalty_1, penalty_2 = Tm1 - Tm_het1, Tm2 - Tm_het2
             except:
                 penalty_1, penalty_2 = 1.5, 1.5
