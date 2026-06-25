@@ -85,7 +85,7 @@ def run_hrm_analysis():
             with c4: st.metric("Tm Hetero 1", f"{Tm_het1:.2f} °C", delta=f"-{penalty_1:.2f}°C"); st.code(f"5'- {r1} -3'\n3'- {c_back2} -5'")
             with c5: st.metric("Tm Hetero 2", f"{Tm_het2:.2f} °C", delta=f"-{penalty_2:.2f}°C"); st.code(f"5'- {r2} -3'\n3'- {c_back1} -5'")
 
-            t_start, t_end = min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6
+            t_start, t_end = min(Tm1, Tm2) - 15, max(Tm1, Tm2) + 15
             T = np.linspace(t_start, t_end, 1000)
             def inverse_sigmoid(T, Tm, k): return 1 / (1 + np.exp((T - Tm) / k))
             F_homo1 = inverse_sigmoid(T, Tm1, k_homo)
@@ -94,19 +94,13 @@ def run_hrm_analysis():
             dF_homo1, dF_homo2, dF_het = -np.gradient(F_homo1, T), -np.gradient(F_homo2, T), -np.gradient(F_het, T)
             F_ref = F_homo1 if ref_selection == "Homozygote 1" else F_homo2
             diff_homo1, diff_homo2, diff_het = F_homo1 - F_ref, F_homo2 - F_ref, F_het - F_ref
-            
-            
-            t_start, t_end = min(Tm1, Tm2) - 6, max(Tm1, Tm2) + 6
-            t_range = st.sidebar.slider(
-            "Temperature Range (°C):",60.00,95.00,(75.00, 90.00),0.01)
-            t_start, t_end = t_range
-            T_sm = np.linspace(t_start, t_end, resolution)
+
             st.subheader("HRM Analysis Visualizations")
             cc1, cc2, cc3 = st.columns(3)
             with cc1: color_homo1 = st.color_picker("Homozygote 1 Color", value="#1E90FF", key="cp_h1")
             with cc2: color_homo2 = st.color_picker("Homozygote 2 Color", value="#FF4500", key="cp_h2")
             with cc3: color_het = st.color_picker("Heterozygote Color", value="#8A2BE2", key="cp_het")
-        
+                
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5.5))
             zoom_range = (t_start, t_end)
             ax1.plot(T, F_homo1, color=color_homo1, linestyle='--'); ax1.plot(T, F_homo2, color=color_homo2, linestyle='--'); ax1.plot(T, F_het, color=color_het, linewidth=3)
@@ -118,6 +112,8 @@ def run_hrm_analysis():
             ax3.plot(T, diff_homo1, color=color_homo1, linestyle=style_h1); ax3.plot(T, diff_homo2, color=color_homo2, linestyle=style_h2); ax3.plot(T, diff_het, color=color_het, linewidth=3)
             ax3.set_title(f'C. Difference Plot ({ref_selection})'); ax3.set_xlim(zoom_range); ax3.grid(True, linestyle=':')
             plt.tight_layout(); st.pyplot(fig)
+
+
 # ==========================================
 # TASK 2: AUTOMATED PRIMER DESIGNER FUNCTION
 # ==========================================
