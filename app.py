@@ -8,9 +8,8 @@ import Bio.SeqUtils.MeltingTemp as mt
 # GLOBAL PAGE CONFIGURATION
 st.set_page_config(page_title="HRMTool", layout="wide")
 
-# ==========================================
 # TASK 1: HRM ANALYSIS FUNCTION
-# ==========================================
+
 
 def run_hrm_analysis():
     st.title("HRM Curve Analyzer")
@@ -117,9 +116,9 @@ def run_hrm_analysis():
             plt.tight_layout(); st.pyplot(fig)
 
 
-# ==========================================
+
 # TASK 2: AUTOMATED PRIMER DESIGNER FUNCTION
-# ==========================================
+
 def run_primer_designer():
     st.title("Primer Design")
     st.markdown("---")
@@ -370,9 +369,9 @@ def run_primer_designer():
     else:
          st.error("Please click Run Primer to view the results.")
 
-# ==========================================
+
 # MAIN ROUTING MANAGEMENT ARCHITECTURE
-# ==========================================
+
 def main():
     st.sidebar.title("Tools")
     current_task = st.sidebar.radio("---", ["HRM Curve Analyzer", "Primer Design"])
